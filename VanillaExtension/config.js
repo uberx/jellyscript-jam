@@ -16,3 +16,15 @@ twitch.onAuthorized((auth) => {
   userId = auth.userId; 
 });
 
+$(function() {
+  $('#form').submit(function(e) {
+    e.preventDefault();
+    options = [];
+    $('input[type=checkbox]').each(function() {
+      if (this.checked) {
+        var option = $(this).val();
+        options.push(option);
+      }
+    });
+  });
+});
