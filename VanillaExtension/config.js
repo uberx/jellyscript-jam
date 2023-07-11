@@ -28,3 +28,7 @@ $(function() {
     });
   });
 });
+
+function updateConfig() {
+  twitch.configuration.set('broadcaster', '1', JSON.stringify(options));
+}
