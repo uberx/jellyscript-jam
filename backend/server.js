@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const https = required('https');
 
 /* Load Configuration, ports and secrets */
 const config = JSON.parse(
@@ -17,8 +18,18 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const http = require('http').Server(app);
 const repository = require('./mongodb/repository');
+
+
+const privateKey = fs.readFileSync(path.join(__dirname, 'ssl', 'server.pem'), 'utf8');
+const certificate = fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'), 'utf8');
+
+
+const credentials = { key: privateKey, cert: certificate };
+
+//Generate HTTP Server
+
+const httpServer = https.createServer(credentials, app);
 
 /*
 Twitch will provide the extension secret, base64 encoded
@@ -61,10 +72,9 @@ async function generateTokenAndListen() {
             config.api_token = token_body.access_token;
             console.log('Got a App Access Token', config.api_token);
             console.log('Ready to start');
-
             // now raise the server
             // as we are ready to process
-            http.listen(config.port, function () {
+            httpServer.listen(config.port, function () {
                 console.log('booted express on', config.port);
             });
 
