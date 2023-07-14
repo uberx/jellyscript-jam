@@ -2,6 +2,7 @@ import Player from "./Player.js";
 import Ground from "./Ground.js";
 import CactiController from "./CactiController.js";
 import Score from "./Score.js";
+import { uploadScore } from "./middleware.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -118,13 +119,14 @@ function getScaleRatio() {
   }
 }
 
-function showGameOver() {
+function showGameOver(score) {
   const fontSize = 70 * scaleRatio;
   ctx.font = `${fontSize}px Verdana`;
   ctx.fillStyle = "grey";
   const x = canvas.width / 4.5;
   const y = canvas.height / 2;
   ctx.fillText("GAME OVER", x, y);
+  uploadScore(score);
 }
 
 function setupGameReset() {
@@ -199,7 +201,7 @@ function gameLoop(currentTime) {
   score.draw();
 
   if (gameOver) {
-    showGameOver();
+    showGameOver(score.getScore());
   }
 
   if (waitingToStart) {

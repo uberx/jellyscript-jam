@@ -18,6 +18,7 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 const http = require('http').Server(app);
+const repository = require('./mongodb/repository');
 
 /*
 Twitch will provide the extension secret, base64 encoded
@@ -38,9 +39,9 @@ So a refresh/remake shouldn't be needed
 async function generateTokenAndListen() {
     let token_url = new URL('https://id.twitch.tv/oauth2/token');
     token_url.search = new URLSearchParams([
-        [ 'client_id',      config.client_id ],
-        [ 'client_secret',  config.client_secret ],
-        [ 'grant_type',    'client_credentials' ]
+        ['client_id', config.client_id],
+        ['client_secret', config.client_secret],
+        ['grant_type', 'client_credentials']
     ]).toString();
 
     let token_resp = await fetch(
@@ -83,7 +84,7 @@ a dumb route logger
 this will log whenever a HTTP request comes in
 for simple debug purposes
 */
-app.use((req,res,next) => {
+app.use((req, res, next) => {
     console.log(req.originalUrl);
     next();
 });
@@ -103,9 +104,9 @@ rather than global
 But if this server only does extension traffic then all good to global
 */
 app
-    .use('/:route?', (req, res, next) => {
+    .use('/', (req, res, next) => {
         if (req.headers['authorization']) {
-            let [ type, auth ] = req.headers['authorization'].split(' ');
+            let [type, auth] = req.headers['authorization'].split(' ');
 
             if (type == 'Bearer') {
                 jwt.verify(
@@ -115,7 +116,7 @@ app
                         if (err) {
                             console.log('JWT Error', err);
 
-                            res.status('401').json({error: true, message: 'Invalid authorization'});
+                            res.status('401').json({ error: true, message: 'Invalid authorization' });
                             return;
                         }
 
@@ -130,18 +131,18 @@ app
                 return;
             }
 
-            res.status('401').json({error: true, message: 'Invalid authorization header'});
+            res.status('401').json({ error: true, message: 'Invalid authorization header' });
         } else {
-            res.status('401').json({error: true, message: 'Missing authorization header'});
+            res.status('401').json({ error: true, message: 'Missing authorization header' });
         }
     })
 
 /*
 And lets actaully setup the API calls/endpoints
 */
-app.route('/')
+app.route('/scores')
     .get((req, res) => {
-        res.status('404').json({error: true, message: 'GET Not supported'});
+        res.status('404').json({ error: true, message: 'GET Not supported' });
     })
     .post(async (req, res) => {
         //if (req.extension.hasOwnProperty('channel_id')) {
@@ -151,7 +152,7 @@ app.route('/')
             // so lets call Get users
             let users_url = new URL('https://api.twitch.tv/helix/users');
             users_url.search = new URLSearchParams([
-                [ 'id', req.extension.user_id ]
+                ['id', req.extension.user_id]
             ]).toString();
 
             let users_resp = await fetch(
@@ -174,9 +175,12 @@ app.route('/')
                     if (users_data.data && users_data.data.length == 1) {
                         // only return the single user
                         // no need to dump an array to the front end
-                        res.json({error: false, data: users_data.data[0]});
+                        let userName = users_data.data[0].login;
+                        await repository.updateScore(userName, req.body.score)
+                        
+                        res.json({ error: false, message: 'Score updated' });
                     } else {
-                        res.status(404).json({error: true, message: 'User not found'});
+                        res.status(404).json({ error: true, message: 'User not found' });
                     }
 
                     return;
@@ -185,9 +189,9 @@ app.route('/')
                 }
             }
 
-            res.status(500).json({error: true, message: 'Twitch API failed'});
+            res.status(500).json({ error: true, message: 'Twitch API failed' });
         } else {
-            res.status(401).json({error: true, message: 'Not Logged into Extension'});
+            res.status(401).json({ error: true, message: 'Not Logged into Extension' });
         }
     });
 

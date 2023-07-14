@@ -23,6 +23,10 @@ export default class Score {
     }
   }
 
+  getScore() {
+    return this.score;
+  }
+
   draw() {
     const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
     const y = 20 * this.scaleRatio;
