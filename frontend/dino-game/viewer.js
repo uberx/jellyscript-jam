@@ -11,6 +11,7 @@ twitch.onContext((context) => {
 
 // onAuthorized callback called each time JWT is fired
 twitch.onAuthorized((auth) => {
+  console.log('twitch.OnAuthorized called')
   // save our credentials
   token = auth.token;  
   userId = auth.userId; 
