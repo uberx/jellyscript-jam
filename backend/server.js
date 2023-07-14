@@ -116,7 +116,7 @@ app
                         if (err) {
                             console.log('JWT Error', err);
 
-                            res.status('401').json({ error: true, message: 'Invalid authorization' });
+                            res.status(401).json({ error: true, message: 'Invalid authorization' });
                             return;
                         }
 
@@ -131,9 +131,9 @@ app
                 return;
             }
 
-            res.status('401').json({ error: true, message: 'Invalid authorization header' });
+            res.status(401).json({ error: true, message: 'Invalid authorization header' });
         } else {
-            res.status('401').json({ error: true, message: 'Missing authorization header' });
+            res.status(401).json({ error: true, message: 'Missing authorization header' });
         }
     })
 
@@ -142,7 +142,7 @@ And lets actaully setup the API calls/endpoints
 */
 app.route('/scores')
     .get((req, res) => {
-        res.status('404').json({ error: true, message: 'GET Not supported' });
+        res.status(404).json({ error: true, message: 'GET Not supported' });
     })
     .post(async (req, res) => {
         //if (req.extension.hasOwnProperty('channel_id')) {

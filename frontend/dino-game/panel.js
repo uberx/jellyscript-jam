@@ -2,7 +2,6 @@ import Player from "./Player.js";
 import Ground from "./Ground.js";
 import CactiController from "./CactiController.js";
 import Score from "./Score.js";
-import { uploadScore } from "./middleware.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -117,6 +116,23 @@ function getScaleRatio() {
   } else {
     return screenHeight / GAME_HEIGHT;
   }
+}
+
+var ebs = "http://localhost:8051"
+
+function uploadScore(score) {
+  fetch(ebs + "/scores", {
+    method: 'POST',
+    headers: {
+      authorization: 'Bearer ' + window.Twitch.ext.viewer.sessionToken
+    },
+    body: {
+      score: score
+    }
+  })
+    .then(resp => {
+      return resp.json();
+    })
 }
 
 function showGameOver(score) {
