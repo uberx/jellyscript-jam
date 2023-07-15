@@ -37,6 +37,7 @@ let gameSpeed = GAME_SPEED_START;
 let gameOver = false;
 let hasAddedEventListenersForRestart = false;
 let waitingToStart = true;
+let canUploadScore = true;
 
 function createSprites() {
   const playerWidthInGame = PLAYER_WIDTH * scaleRatio;
@@ -144,7 +145,10 @@ function showGameOver(score) {
   const x = canvas.width / 4.5;
   const y = canvas.height / 2;
   ctx.fillText("GAME OVER", x, y);
-  uploadScore(Math.floor(score));
+  if (canUploadScore) {
+    uploadScore(Math.floor(score));
+  }
+  canUploadScore = false;
 }
 
 function setupGameReset() {
@@ -166,6 +170,7 @@ function reset() {
   cactiController.reset();
   score.reset();
   gameSpeed = GAME_SPEED_START;
+  canUploadScore = true;
 }
 
 function showStartGameText() {
