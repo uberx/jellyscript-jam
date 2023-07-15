@@ -11,13 +11,21 @@ mongoose
 const scoreSchema = require('./schema');
 const Score = mongoose.model('Score', scoreSchema.schema);
 
-const updateScore = (userName, score) => {
+const updateScore = (username, score) => {
+    console.log('Updating score to', score, 'for username', username);
     const newScore = new Score({
-        _id: userName,
+        _id: username,
         score: score,
         updatedAt: Date.now()
     })
-    newScore.save();
+    newScore.save((err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log(result)
+        }
+    });
 }
 
 const listTopUsers = (count) => {

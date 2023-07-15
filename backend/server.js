@@ -89,13 +89,15 @@ async function generateTokenAndListen() {
     process.exit();
 }
 
+app.use(require('body-parser').json());
+
 /*
 a dumb route logger
 this will log whenever a HTTP request comes in
 for simple debug purposes
 */
 app.use((req, res, next) => {
-    console.log(req.originalUrl);
+    console.log(req.originalUrl, req.body);
     next();
 });
 
@@ -133,6 +135,7 @@ app
                         req.extension = decoded;
 
                         console.log('Extension Data:', req.extension);
+                        console.log(req.body);
 
                         next();
                     }
@@ -185,8 +188,8 @@ app.route('/scores')
                     if (users_data.data && users_data.data.length == 1) {
                         // only return the single user
                         // no need to dump an array to the front end
-                        let userName = users_data.data[0].login;
-                        await repository.updateScore(userName, req.body.score)
+                        let username = users_data.data[0].login;
+                        repository.updateScore(username, req.body.score)
                         
                         res.json({ error: false, message: 'Score updated' });
                     } else {
@@ -195,6 +198,7 @@ app.route('/scores')
 
                     return;
                 } catch (e) {
+                    console.log(e);
                     // drop to fail
                 }
             }
