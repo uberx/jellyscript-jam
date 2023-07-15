@@ -2,6 +2,7 @@ import Player from "./Player.js";
 import Ground from "./Ground.js";
 import CactiController from "./CactiController.js";
 import Score from "./Score.js";
+import PowerUp from "./PowerUp.js";  // New import
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -19,6 +20,9 @@ const GROUND_WIDTH = 2400;
 const GROUND_HEIGHT = 24;
 const GROUND_AND_CACTUS_SPEED = 0.5;
 
+const POWER_UP_WIDTH = 30;  // New constant
+const POWER_UP_HEIGHT = 30;  // New constant
+
 const CACTI_CONFIG = [
   { width: 48 / 1.5, height: 100 / 1.5, image: "images/cactus_1.png" },
   { width: 98 / 1.5, height: 100 / 1.5, image: "images/cactus_2.png" },
@@ -30,6 +34,7 @@ let player = null;
 let ground = null;
 let cactiController = null;
 let score = null;
+let powerUp = null;  // New object
 
 let scaleRatio = null;
 let previousTime = null;
@@ -38,14 +43,6 @@ let gameOver = false;
 let hasAddedEventListenersForRestart = false;
 let waitingToStart = true;
 let canUploadScore = true;
-
-
-//Power Up Logic
-let powerUpActive = false;
-let powerUpTime  =  null;
-const POWER_UP_MIN_TIME= 5000;
-const POWER_UP_MAX_TIME= 10000;
-const POWER_UP_SPEED_INCREASE = 0.15;
 
 function createSprites() {
   const playerWidthInGame = PLAYER_WIDTH * scaleRatio;
@@ -57,20 +54,20 @@ function createSprites() {
   const groundHeightInGame = GROUND_HEIGHT * scaleRatio;
 
   player = new Player(
-    ctx,
-    playerWidthInGame,
-    playerHeightInGame,
-    minJumpHeightInGame,
-    maxJumpHeightInGame,
-    scaleRatio
+      ctx,
+      playerWidthInGame,
+      playerHeightInGame,
+      minJumpHeightInGame,
+      maxJumpHeightInGame,
+      scaleRatio
   );
 
   ground = new Ground(
-    ctx,
-    groundWidthInGame,
-    groundHeightInGame,
-    GROUND_AND_CACTUS_SPEED,
-    scaleRatio
+      ctx,
+      groundWidthInGame,
+      groundHeightInGame,
+      GROUND_AND_CACTUS_SPEED,
+      scaleRatio
   );
 
   const cactiImages = CACTI_CONFIG.map((cactus) => {
@@ -84,13 +81,16 @@ function createSprites() {
   });
 
   cactiController = new CactiController(
-    ctx,
-    cactiImages,
-    scaleRatio,
-    GROUND_AND_CACTUS_SPEED
+      ctx,
+      cactiImages,
+      scaleRatio,
+      GROUND_AND_CACTUS_SPEED
   );
 
   score = new Score(ctx, scaleRatio);
+
+  // Create new power up
+  powerUp = new PowerUp(ctx, POWER_UP_WIDTH * scaleRatio, POWER_UP_HEIGHT * scaleRatio, GROUND_AND_CACTUS_SPEED, scaleRatio);
 }
 
 function setScreen() {
@@ -101,7 +101,6 @@ function setScreen() {
 }
 
 setScreen();
-//Use setTimeout on Safari mobile rotation otherwise works fine on desktop
 window.addEventListener("resize", () => setTimeout(setScreen, 500));
 
 if (screen.orientation) {
@@ -110,16 +109,15 @@ if (screen.orientation) {
 
 function getScaleRatio() {
   const screenHeight = Math.min(
-    window.innerHeight,
-    document.documentElement.clientHeight
+      window.innerHeight,
+      document.documentElement.clientHeight
   );
 
   const screenWidth = Math.min(
-    window.innerWidth,
-    document.documentElement.clientWidth
+      window.innerWidth,
+      document.documentElement.clientWidth
   );
 
-  //window is wider than the game width
   if (screenWidth / screenHeight < GAME_WIDTH / GAME_HEIGHT) {
     return screenWidth / GAME_WIDTH;
   } else {
@@ -127,32 +125,8 @@ function getScaleRatio() {
   }
 }
 
-//Function for PowerUp activation
-function activePowerUp() {
-  if (!powerUpActive) {
-    powerUpActive = true;
-    gameSpeed += gameSpeed * POWER_UP_SPEED_INCREASE;
-    setTimeout(deactivatePowerUp, POWER_UP_MIN_TIME);
-  }
-}
-
-function deactivatePowerUp() {
-  if (powerUpActive) {
-    powerUpActive = false;
-    gameSpeed -= gameSpeed * POWER_UP_SPEED_INCREASE;
-    setTimeout(deactivatePowerUp, getRandomTime());
-  }
-}
-function getRandomTime() {
-  return Math.random() * (POWER_UP_MAX_TIME - POWER_UP_MIN_TIME) + POWER_UP_MIN_TIME;
-}
-
-
-
-var ebs = "https://www.varangianroute.com"
-
 function uploadScore(score) {
-  fetch(ebs + "/scores", {
+  fetch("https://www.varangianroute.com/scores", {
     method: 'POST',
     headers: {
       "Content-Type": "application/json",
@@ -162,9 +136,9 @@ function uploadScore(score) {
       score: score
     })
   })
-    .then(resp => {
-      return resp.json();
-    })
+      .then(resp => {
+        return resp.json();
+      })
 }
 
 function showGameOver(score) {
@@ -232,18 +206,13 @@ function gameLoop(currentTime) {
   const frameTimeDelta = currentTime - previousTime;
   previousTime = currentTime;
 
-
   clearScreen();
 
-  //PowerUp Scheduling -- May consider changing this up
-  if (!powerUpActive && !waitingToStart && Math.random() < frameTimeDelta / 1000 / POWER_UP_MIN_TIME) {
-    activatePowerUp();
-  } else if(powerUpActive && Math.random() < frameTimeDelta / 1000 / POWER_UP_MIN_TIME) {
-    deactivatePowerUp();
-  }
+  // Update and draw power up
+  powerUp.update(gameSpeed, frameTimeDelta);
+  powerUp.draw();
 
   if (!gameOver && !waitingToStart) {
-    //Update game objects
     ground.update(gameSpeed, frameTimeDelta);
     cactiController.update(gameSpeed, frameTimeDelta);
     player.update(gameSpeed, frameTimeDelta);
@@ -257,7 +226,13 @@ function gameLoop(currentTime) {
     score.setHighScore();
   }
 
-  //Draw game objects
+  // If player collides with power up, increase speed and create a new power up
+  if (!gameOver && powerUp.collideWith(player)) {
+    gameSpeed *= 1.20;
+    powerUp = new PowerUp(ctx, POWER_UP_WIDTH * scaleRatio, POWER_UP_HEIGHT * scaleRatio, GROUND_AND_CACTUS_SPEED, scaleRatio);
+  }
+
+  // Draw game objects
   ground.draw();
   cactiController.draw();
   player.draw();

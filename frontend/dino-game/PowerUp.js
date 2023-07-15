@@ -1,19 +1,19 @@
 export default class PowerUp {
-    constructor(ctx, width, height, speed, scaleRatio) {
+    constructor(ctx, width, x ,y, height, speed) {
         this.ctx = ctx;
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
         this.speed = speed;
-        this.scaleRatio = scaleRatio;
-        this.x = ctx.canvas.width / 2;
-        this.y = ctx.canvas.width / 2;
     }
 
 
-    update(gameSpeed, frameTimeDelta) {
+    update(frameTimeDelta) {
         this.x -= this.speed * frameTimeDelta;
         if (this.x < -this.width) {
-            this.x = this.ctx.canvas.width;
+        this.x = GAME_WIDTH * scaleRatio;
+        this.y = Math.random() * (GAME_HEIGHT - this.height);
         }
     }
 
