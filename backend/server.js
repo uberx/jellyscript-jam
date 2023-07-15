@@ -22,9 +22,9 @@ const repository = require('./mongodb/repository');
 
 
 const options = {
-	key: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/privkey1.pem'),
-	cert: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/cert1.pem'),
-	ca: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/chain1.pem')
+    key: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/privkey1.pem'),
+    cert: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/cert1.pem'),
+    ca: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/chain1.pem')
 };
 
 
@@ -33,7 +33,7 @@ const options = {
 const httpServer = https.createServer(options, app)
 
 httpServer.on('error', (error) => {
-	console.error('Erropr occurred', error);
+    console.error('Erropr occurred', error);
 });
 
 /*
@@ -140,7 +140,6 @@ app
                         req.extension = decoded;
 
                         console.log('Extension Data:', req.extension);
-                        console.log(req.body);
 
                         next();
                     }
@@ -194,9 +193,17 @@ app.route('/scores')
                         // only return the single user
                         // no need to dump an array to the front end
                         let username = users_data.data[0].login;
-                        repository.updateScore(username, req.body.score)
-                        
-                        res.json({ error: false, message: 'Score updated' });
+                        repository.updateScore(
+                            username,
+                            req.body.score,
+                            (result) => {
+                                console.log(result);
+                                res.json({ error: false, message: 'Score updated' });
+                            },
+                            (error) => {
+                                console.log(error);
+                                res.status(500).json({ error: true, message: 'Error updating score' });
+                            });
                     } else {
                         res.status(404).json({ error: true, message: 'User not found' });
                     }
@@ -214,5 +221,19 @@ app.route('/scores')
         }
     });
 
+app.route('/top-scores')
+    .get(async (req, res) => {
+        let count = req.query.count;
+        repository.listTopUsers(
+            count,
+            (scores) => {
+                console.log(scores);
+                res.json({ error: false, scores: scores });
+            },
+            (error) => {
+                console.log(error);
+                res.status(500).json({ error: true, message: 'Error getting top scores' });
+            });
+    })
 
 generateTokenAndListen();
