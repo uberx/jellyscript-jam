@@ -118,7 +118,7 @@ function getScaleRatio() {
   }
 }
 
-var ebs = "http://localhost:8051"
+var ebs = "https://3.141.246.84"
 
 function uploadScore(score) {
   console.log
