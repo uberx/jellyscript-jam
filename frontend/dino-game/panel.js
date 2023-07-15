@@ -122,7 +122,6 @@ function getScaleRatio() {
 var ebs = "https://www.varangianroute.com"
 
 function uploadScore(score) {
-  console.log
   fetch(ebs + "/scores", {
     method: 'POST',
     headers: {
