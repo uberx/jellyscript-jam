@@ -15,7 +15,7 @@ const Score = mongoose.model('Score', scoreSchema.schema);
 const updateScore = (username, score) => {
     console.log('Updating score to', score, 'for username', username);
     const newScore = new Score({
-        _id: username,
+        username: username,
         score: score,
         updatedAt: Date.now()
     })
