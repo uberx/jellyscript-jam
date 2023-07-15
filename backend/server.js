@@ -21,15 +21,16 @@ const app = express();
 const repository = require('./mongodb/repository');
 
 
-const privateKey = fs.readFileSync(path.join(__dirname, 'ssl', 'server.pem'), 'utf8');
-const certificate = fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'), 'utf8');
+const options = {
+	key: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/privkey1.pem'),
+	cert: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/cert1.pem'),
+	ca: fs.readFileSync('/home/ubuntu/repos/jellyscript-jam/backend/ssl/chain1.pem')
+};
 
-
-const credentials = { key: privateKey, cert: certificate };
 
 //Generate HTTP Server
 
-const httpServer = https.createServer(credentials, app);
+const httpServer = https.createServer(options, app)
 
 httpServer.on('error', (error) => {
 	console.error('Erropr occurred', error);
