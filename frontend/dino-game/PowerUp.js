@@ -7,6 +7,10 @@ export default class PowerUp {
         this.height = height;
         this.speed = speed;
         this.scaleRatio = scaleRatio;
+
+        // Load the image for the power-up
+        this.image = new Image();
+        this.image.src = 'images/moonsun_final.png';
     }
 
     update(speed, gameSpeed, frameTimeDelta, gameOver) {
@@ -16,11 +20,8 @@ export default class PowerUp {
     }
 
     draw() {
-        this.ctx.fillStyle = "red";
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2, true);
-        this.ctx.closePath();
-        this.ctx.fill();
+        // Draw the power-up image
+        this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 
     collideWith(sprite) {
