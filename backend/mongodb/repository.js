@@ -12,28 +12,40 @@ mongoose
 const scoreSchema = require('./schema');
 const Score = mongoose.model('Score', scoreSchema.schema);
 
-const updateScore = (username, score) => {
+const updateScore = (username, score, resultCallback, errorCallback) => {
     console.log('Updating score to', score, 'for username', username);
     const newScore = new Score({
         username: username,
         score: score,
         updatedAt: Date.now()
     })
+
+    let error;
     newScore.save((err, result) => {
         if (err) {
-            console.log(err);
+            errorCallback(err);
         }
         else {
-            console.log(result)
+            resultCallback(result);
         }
     });
+    return error;
 }
 
-const listTopUsers = (count) => {
-    return Score.find()
+const listTopScores = (count, resultCallback, errorCallback) => {
+    console.log('Listing top', count, 'scores');
+    Score.find()
         .sort({ score: -1 })
-        .limit(count);
+        .limit(count)
+        .exec((err, result) => {
+            if (err) {
+                errorCallback(err);
+            }
+            else {
+                resultCallback(result);
+            }
+        })
 }
 
 exports.updateScore = updateScore;
-exports.listTopUsers = listTopUsers;
+exports.listTopUsers = listTopScores;
