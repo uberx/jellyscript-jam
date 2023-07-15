@@ -121,6 +121,7 @@ function getScaleRatio() {
 var ebs = "http://localhost:8051"
 
 function uploadScore(score) {
+  console.log
   fetch(ebs + "/scores", {
     method: 'POST',
     headers: {
@@ -142,7 +143,7 @@ function showGameOver(score) {
   const x = canvas.width / 4.5;
   const y = canvas.height / 2;
   ctx.fillText("GAME OVER", x, y);
-  uploadScore(score);
+  uploadScore(Math.floor(score));
 }
 
 function setupGameReset() {
