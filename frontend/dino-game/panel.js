@@ -39,6 +39,14 @@ let hasAddedEventListenersForRestart = false;
 let waitingToStart = true;
 let canUploadScore = true;
 
+
+//Power Up Logic
+let powerUpActive = false;
+let powerUpTime  =  null;
+const POWER_UP_MIN_TIME= 5000;
+const POWER_UP_MAX_TIME= 10000;
+const POWER_UP_SPEED_INCREASE = 0.15;
+
 function createSprites() {
   const playerWidthInGame = PLAYER_WIDTH * scaleRatio;
   const playerHeightInGame = PLAYER_HEIGHT * scaleRatio;
@@ -119,6 +127,28 @@ function getScaleRatio() {
   }
 }
 
+//Function for PowerUp activation
+function activePowerUp() {
+  if (!powerUpActive) {
+    powerUpActive = true;
+    gameSpeed += gameSpeed * POWER_UP_SPEED_INCREASE;
+    setTimeout(deactivatePowerUp, POWER_UP_MIN_TIME);
+  }
+}
+
+function deactivatePowerUp() {
+  if (powerUpActive) {
+    powerUpActive = false;
+    gameSpeed -= gameSpeed * POWER_UP_SPEED_INCREASE;
+    setTimeout(deactivatePowerUp, getRandomTime());
+  }
+}
+function getRandomTime() {
+  return Math.random() * (POWER_UP_MAX_TIME - POWER_UP_MIN_TIME) + POWER_UP_MIN_TIME;
+}
+
+
+
 var ebs = "https://www.varangianroute.com"
 
 function uploadScore(score) {
@@ -186,7 +216,10 @@ function updateGameSpeed(frameTimeDelta) {
 }
 
 function clearScreen() {
-  ctx.fillStyle = "white";
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, "#87CEEB");
+  gradient.addColorStop(1, "#4682B4");
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
@@ -199,14 +232,22 @@ function gameLoop(currentTime) {
   const frameTimeDelta = currentTime - previousTime;
   previousTime = currentTime;
 
+
   clearScreen();
+
+  //PowerUp Scheduling -- May consider changing this up
+  if (!powerUpActive && !waitingToStart && Math.random() < frameTimeDelta / 1000 / POWER_UP_MIN_TIME) {
+    activatePowerUp();
+  } else if(powerUpActive && Math.random() < frameTimeDelta / 1000 / POWER_UP_MIN_TIME) {
+    deactivatePowerUp();
+  }
 
   if (!gameOver && !waitingToStart) {
     //Update game objects
     ground.update(gameSpeed, frameTimeDelta);
     cactiController.update(gameSpeed, frameTimeDelta);
     player.update(gameSpeed, frameTimeDelta);
-    score.update(frameTimeDelta);
+    score.update(frameTimeDelta, gameSpeed);
     updateGameSpeed(frameTimeDelta);
   }
 
@@ -220,7 +261,7 @@ function gameLoop(currentTime) {
   ground.draw();
   cactiController.draw();
   player.draw();
-  score.draw();
+  score.draw(gameSpeed);
 
   if (gameOver) {
     showGameOver(score.getScore());

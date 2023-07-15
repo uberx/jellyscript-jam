@@ -8,7 +8,7 @@ export default class Score {
     this.scaleRatio = scaleRatio;
   }
 
-  update(frameTimeDelta) {
+  update(frameTimeDelta, gameSpeed) {
     this.score += frameTimeDelta * 0.01;
   }
 
@@ -27,7 +27,7 @@ export default class Score {
     return this.score;
   }
 
-  draw() {
+  draw(gameSpeed){
     const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
     const y = 20 * this.scaleRatio;
 
@@ -42,5 +42,8 @@ export default class Score {
 
     this.ctx.fillText(scorePadded, scoreX, y);
     this.ctx.fillText(`HI ${highScorePadded}`, highScoreX, y);
+
+    const gameSpeedX = highScoreX - 150 * this.scaleRatio;
+    this.ctx.fillText(`SPEED:${gameSpeed.toFixed(2)}`, gameSpeedX, y);
   }
 }
