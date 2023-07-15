@@ -6,7 +6,7 @@ const twitch = window.Twitch.ext;
 
 // callback called when context of an extension is fired 
 twitch.onContext((context) => {
-  console.log(context);
+  //console.log(context);
 });
 
 

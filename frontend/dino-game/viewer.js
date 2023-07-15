@@ -5,13 +5,13 @@ const twitch = window.Twitch.ext;
 
 // callback called when context of an extension is fired 
 twitch.onContext((context) => {
-  console.log(context);
+  //console.log(context);
 });
 
 
 // onAuthorized callback called each time JWT is fired
 twitch.onAuthorized((auth) => {
-  console.log('twitch.OnAuthorized called')
+  //console.log('twitch.OnAuthorized called')
   // save our credentials
   token = auth.token;  
   userId = auth.userId; 
