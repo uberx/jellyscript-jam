@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const https = required('https');
+const https = require('https');
 
 /* Load Configuration, ports and secrets */
 const config = JSON.parse(
@@ -30,6 +30,10 @@ const credentials = { key: privateKey, cert: certificate };
 //Generate HTTP Server
 
 const httpServer = https.createServer(credentials, app);
+
+httpServer.on('error', (error) => {
+	console.error('Erropr occurred', error);
+});
 
 /*
 Twitch will provide the extension secret, base64 encoded

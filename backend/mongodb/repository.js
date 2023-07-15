@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
 mongoose
     .connect('mongodb+srv://jellyscriptjam:Gks6llxeQASVnc1W@codejam0.u3vgu5f.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
     .then((result) =>
