@@ -2,7 +2,7 @@ import Player from "./Player.js";
 import Ground from "./Ground.js";
 import CactiController from "./CactiController.js";
 import Score from "./Score.js";
-import PowerUp from "./PowerUp.js";  // New import
+import PowerUpController from "./PowerUpController.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -12,16 +12,16 @@ const GAME_SPEED_INCREMENT = 0.00001;
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 200;
-const PLAYER_WIDTH = 88 / 1.5; //58
-const PLAYER_HEIGHT = 94 / 1.5; //62
+const PLAYER_WIDTH = 88 / 1.5;
+const PLAYER_HEIGHT = 94 / 1.5;
 const MAX_JUMP_HEIGHT = GAME_HEIGHT;
 const MIN_JUMP_HEIGHT = 150;
 const GROUND_WIDTH = 2400;
 const GROUND_HEIGHT = 24;
 const GROUND_AND_CACTUS_SPEED = 0.5;
 
-const POWER_UP_WIDTH = 30;  // New constant
-const POWER_UP_HEIGHT = 30;  // New constant
+const POWER_UP_WIDTH = 30;
+const POWER_UP_HEIGHT = 30;
 
 const CACTI_CONFIG = [
   { width: 48 / 1.5, height: 100 / 1.5, image: "images/cactus_1.png" },
@@ -29,12 +29,11 @@ const CACTI_CONFIG = [
   { width: 68 / 1.5, height: 70 / 1.5, image: "images/cactus_3.png" },
 ];
 
-//Game Objects
 let player = null;
 let ground = null;
 let cactiController = null;
 let score = null;
-let powerUp = null;  // New object
+let powerUpController = null;
 
 let scaleRatio = null;
 let previousTime = null;
@@ -89,8 +88,12 @@ function createSprites() {
 
   score = new Score(ctx, scaleRatio);
 
-  // Create new power up
-  powerUp = new PowerUp(ctx, POWER_UP_WIDTH * scaleRatio, POWER_UP_HEIGHT * scaleRatio, GROUND_AND_CACTUS_SPEED, scaleRatio);
+  powerUpController = new PowerUpController(
+      ctx,
+      POWER_UP_WIDTH * scaleRatio,
+      POWER_UP_HEIGHT * scaleRatio,
+      GROUND_AND_CACTUS_SPEED
+  );
 }
 
 function setScreen() {
@@ -203,14 +206,14 @@ function gameLoop(currentTime) {
     requestAnimationFrame(gameLoop);
     return;
   }
+
   const frameTimeDelta = currentTime - previousTime;
   previousTime = currentTime;
 
   clearScreen();
 
-  // Update and draw power up
-  powerUp.update(gameSpeed, frameTimeDelta);
-  powerUp.draw();
+  powerUpController.update(gameSpeed, frameTimeDelta, gameOver);
+  powerUpController.draw();
 
   if (!gameOver && !waitingToStart) {
     ground.update(gameSpeed, frameTimeDelta);
@@ -226,13 +229,11 @@ function gameLoop(currentTime) {
     score.setHighScore();
   }
 
-  // If player collides with power up, increase speed and create a new power up
-  if (!gameOver && powerUp.collideWith(player)) {
+  if (!gameOver && powerUpController.collideWith(player)) {
     gameSpeed *= 1.20;
-    powerUp = new PowerUp(ctx, POWER_UP_WIDTH * scaleRatio, POWER_UP_HEIGHT * scaleRatio, GROUND_AND_CACTUS_SPEED, scaleRatio);
+    powerUpController.reset();
   }
 
-  // Draw game objects
   ground.draw();
   cactiController.draw();
   player.draw();
@@ -248,7 +249,6 @@ function gameLoop(currentTime) {
 
   requestAnimationFrame(gameLoop);
 }
-
 requestAnimationFrame(gameLoop);
 
 window.addEventListener("keyup", reset, { once: true });
