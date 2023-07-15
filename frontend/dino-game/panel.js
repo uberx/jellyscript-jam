@@ -118,18 +118,19 @@ function getScaleRatio() {
   }
 }
 
-var ebs = "https://3.141.246.84"
+var ebs = "https://www.varangianroute.com"
 
 function uploadScore(score) {
   console.log
   fetch(ebs + "/scores", {
     method: 'POST',
     headers: {
+      "Content-Type": "application/json",
       authorization: 'Bearer ' + window.Twitch.ext.viewer.sessionToken
     },
-    body: {
+    body: JSON.stringify({
       score: score
-    }
+    })
   })
     .then(resp => {
       return resp.json();
