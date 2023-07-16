@@ -49,7 +49,16 @@ let waitingToStart = true;
 let canUploadScore = true;
 
 let cycleState = 0;
-let cycleColors = ["#87CEEB", "#4682B4", "#000000", "#4682B4", "#87CEEB", "rainbow"];
+let cycleColors = ["#87CEEB", "#4682B4", "#000000", "#4682B4", "#87CEEB",
+  "#FF0000", // Red
+  "#FFA500", // Orange
+  "#FFFF00", // Yellow
+  "#008000", // Green
+  "#0000FF", // Blue
+  "#4B0082", // Indigo
+  "#EE82EE", // Violet
+]
+
 
 const audio = new Audio("music/I_Can_Explain2.wav");
 audio.loop = true;
@@ -373,7 +382,10 @@ function reset() {
   gameSpeed = GAME_SPEED_START;
   canUploadScore = true;
   playMusic(); // Start playing the music when the game resets
+
+  showLeaderboardModal();
 }
+
 
 function showStartGameText() {
   const fontSize = 40 * scaleRatio;
