@@ -249,32 +249,89 @@ function listTopScores(count) {
 
 function createModal(content) {
   const modal = document.createElement('div');
-  modal.style.position = 'fixed';
-  modal.style.top = '50%';
-  modal.style.left = '50%';
-  modal.style.transform = 'translate(-50%, -50%)';
-  modal.style.backgroundColor = 'rgba(133, 133, 133, 0.5)';
-  modal.style.zIndex = "1000";
-  modal.style.padding = '20px';
-  modal.style.width = '80%';
-  modal.style.height = '80%';
-  modal.style.overflow = 'auto';
-  modal.style.borderRadius = "10px";
-  modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+  modal.classList.add('leaderboard-modal');
 
-  const closeBtn = document.createElement('button');
-  closeBtn.textContent = 'X';
-  closeBtn.style.position = 'absolute';
-  closeBtn.style.top = '20px';
-  closeBtn.style.right = '20px';
-  closeBtn.addEventListener('click', () => {
+  const header = document.createElement('div');
+  header.style.backgroundColor = 'purple';
+  header.style.color = 'white';
+  header.style.padding = '10px';
+  header.style.marginBottom = '10px';
+  header.textContent = 'Leaderboard';
+
+  const leaderboardTable = document.createElement('table');
+  leaderboardTable.classList.add('leaderboard-table');
+  leaderboardTable.innerHTML = content;
+
+  const modalContent = document.createElement('div');
+  modalContent.classList.add('leaderboard-modal-content');
+  modalContent.appendChild(header);
+  modalContent.appendChild(leaderboardTable);
+
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+
+  modal.addEventListener('click', closeModal);
+  document.addEventListener('keydown', handleKeyPress);
+
+  function closeModal() {
       document.body.removeChild(modal);
+      modal.removeEventListener('click', closeModal);
+      document.removeEventListener('keydown', handleKeyPress);
+  }
+
+  function handleKeyPress(event) {
+      if (event.code === 'Space') {
+          closeModal();
+      }
+  }
+}
+
+function generateLeaderboardTable(leaderboardData) {
+  let tableHTML = `
+      <thead>
+          <tr>
+              <th>Username</th>
+              <th>Score</th>
+          </tr>
+      </thead>
+      <tbody>
+  `;
+
+  leaderboardData.forEach((leader) => {
+      tableHTML += `
+          <tr>
+              <td>${leader.username}</td>
+              <td>${leader.score}</td>
+          </tr>
+      `;
   });
 
-  modal.innerHTML = content;
-  modal.appendChild(closeBtn);
-  document.body.appendChild(modal);
+  tableHTML += `
+      </tbody>
+  `;
+
+  return tableHTML;
 }
+
+function createLeaderboard(leaderboardData) {
+  const leaderboardTable = generateLeaderboardTable(leaderboardData);
+  createModal(leaderboardTable);
+}
+
+const mockLeaderboardData = [
+  { username: 'User1', score: 1000 },
+  { username: 'User2', score: 900 },
+  { username: 'User3', score: 800 },
+  { username: 'User4', score: 700 },
+  { username: 'User5', score: 600 },
+  { username: 'User6', score: 500 },
+  { username: 'User7', score: 400 },
+  { username: 'User8', score: 300 },
+  { username: 'User9', score: 200 },
+  { username: 'User10', score: 100 },
+];
+
+createLeaderboard(mockLeaderboardData);
 
 function showGameOver(score) {
   const fontSize = 70 * scaleRatio;
