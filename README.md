@@ -1,11 +1,13 @@
-# Game Extension: Dino Race Through Space-Time Continuum
+# Game Extension: Dino Time Crunch Extension
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Table of Contents
 1. [Project Description](#project-description)
 2. [Game Implementation](#game-implementation)
 3. [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
 4. [Usage](#usage)
 5. [License](#license)
 6. [Acknowledgements](#acknowledgements)
@@ -62,13 +64,18 @@ This is a simple runner game where all actions can be controlled using the "Spac
 [![Dino Time Crunch](https://img.youtube.com/vi/vThfF4-jd9c/0.jpg)](https://youtu.be/vThfF4-jd9c)
 
 
+#### Live Extension Demo
+
+[![Live Extension Demo](https://img.youtube.com/vi/c0HqZH1KW6s/0.jpg)](https://youtu.be/c0HqZH1KW6s)
+
+
 #### Working with Twitch Extension
 
 If this extension is approved, the streamer can decide how to curate the game. As long as the viewers are whitelisted on the extension, they should be able to join the game component and strive to make it onto the leaderboards.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/uberx/jellyscript-jam/blob/main/LICENSE) file for details.
 
 ## Acknowledgements
 
