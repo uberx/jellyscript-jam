@@ -51,7 +51,7 @@ let canUploadScore = true;
 let cycleState = 0;
 let cycleColors = ["#87CEEB", "#4682B4", "#000000", "#4682B4", "#87CEEB", "rainbow"];
 
-const audio = new Audio("music/I_Can_Explain.wav");
+const audio = new Audio("music/I_Can_Explain2.wav");
 audio.loop = true;
 audio.volume = 1;
 
