@@ -3,12 +3,15 @@ import Ground from "./Ground.js";
 import CactiController from "./CactiController.js";
 import Score from "./Score.js";
 import PowerUpController from "./PowerUpController.js";
+import Table from "./Table.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 const GAME_SPEED_START = 1; // 1.0
 const GAME_SPEED_INCREMENT = 0.00001;
+
+const ebs = "https://varangianroutes.com";
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 200;
@@ -20,8 +23,8 @@ const GROUND_WIDTH = 2400;
 const GROUND_HEIGHT = 24;
 const GROUND_AND_CACTUS_SPEED = 0.5;
 
-const POWER_UP_WIDTH = 30; // New constant
-const POWER_UP_HEIGHT = 30; // New constant
+const POWER_UP_WIDTH = 30;
+const POWER_UP_HEIGHT = 30;
 
 const CACTI_CONFIG = [
   { width: 48 / 1.5, height: 100 / 1.5, image: "images/cactus_1.png" },
@@ -29,12 +32,13 @@ const CACTI_CONFIG = [
   { width: 68 / 1.5, height: 70 / 1.5, image: "images/cactus_3.png" },
 ];
 
-//Game Objects
+// Game Objects
 let player = null;
 let ground = null;
 let cactiController = null;
 let score = null;
 let powerUpController = null;
+let table = null;
 
 let scaleRatio = null;
 let previousTime = null;
@@ -49,15 +53,69 @@ let cycleColors = ["#87CEEB", "#4682B4", "#000000", "#4682B4", "#87CEEB", "rainb
 
 const audio = new Audio("music/I_Can_Explain.wav");
 audio.loop = true;
-audio.volume = 1; // Set the initial volume here
+audio.volume = 1;
 
 
-// Function to play the music
+//Mock Data
+const mockData = [
+  { username: 'Player1', score: 1000 },
+  { username: 'Player2', score: 900 },
+  { username: 'Player3', score: 800 },
+  { username: 'Player4', score: 700 },
+  { username: 'Player5', score: 600 },
+  { username: 'Player6', score: 5000 },
+  { username: 'Player7', score: 400 },
+  { username: 'Player8', score: 300 },
+  { username: 'Player9', score: 200 },
+  { username: 'Player10', score: 100 },
+];
+
+//Real API data
+const mockData2 = {
+    "error": false,
+    "scores": [
+      {
+        "_id": "8a17707e-1530-4c70-bc42-4e330356cab2",
+        "username": "jellyscriptjam",
+        "score": 1337,
+        "updatedAt": 1689410337575,
+        "__v": 0
+      },
+      {
+        "_id": "f1ae2638-e9fa-48e2-9b39-5982f12aced6",
+        "username": "jellyscriptjam",
+        "score": 1078,
+        "updatedAt": 1689411352352,
+        "__v": 0
+      },
+      {
+        "_id": "0f31c52c-4ebc-4d9b-8985-3ebafe338f48",
+        "username": "jellyscriptjam",
+        "score": 1000,
+        "updatedAt": 1689410316787,
+        "__v": 0
+      },
+      {
+        "_id": "f21504c0-c8f5-4117-94f6-5d6c01ad8514",
+        "username": "jellyscriptjam",
+        "score": 810,
+        "updatedAt": 1689480521388,
+        "__v": 0
+      },
+      {
+        "_id": "19c07f56-c0ba-4a45-8ae2-a2c06997f7b6",
+        "username": "jellyscriptjam",
+        "score": 500,
+        "updatedAt": 1689408773057,
+        "__v": 0
+      }
+    ]
+  }
+
 function playMusic() {
   audio.play();
 }
 
-// Function to stop the music
 function stopMusic() {
   audio.pause();
   audio.currentTime = 0;
@@ -108,8 +166,9 @@ function createSprites() {
 
   score = new Score(ctx, scaleRatio);
 
-  // Create new power up controller
   powerUpController = new PowerUpController(ctx, POWER_UP_WIDTH * scaleRatio, POWER_UP_HEIGHT * scaleRatio, GROUND_AND_CACTUS_SPEED, scaleRatio);
+
+  table = new Table(ctx, scaleRatio);
 }
 
 function setScreen() {
@@ -145,7 +204,7 @@ function getScaleRatio() {
 }
 
 function uploadScore(score) {
-  fetch("https://www.varangianroute.com/scores", {
+  return fetch("https://www.varangianroute.com/scores", {
     method: 'POST',
     headers: {
       "Content-Type": "application/json",
@@ -155,10 +214,38 @@ function uploadScore(score) {
       score: score
     })
   })
-      .then(resp => {
-        return resp.json();
-      })
+      .then(resp => resp.json());
 }
+
+function listTopScores(count) {
+  fetch(ebs + `/top-scores?count=${count}`, {
+    method: 'GET',
+    headers: {
+      "Content-Type": "application/json",
+      authorization: 'Bearer ' + window.Twitch.ext.viewer.sessionToken
+    },
+  })
+      .then(resp => {
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        return resp.json().scores;
+      })
+      .then(data => {
+        if (!data || data.length === 0) {
+          console.warn('No data received from API, using mock data instead');
+          data = mockData.slice(0, count);
+        }
+        table.updateLeaders(data);
+        createModal(table.draw());
+      })
+      .catch(error => {
+        console.error('Error fetching data from API, using mock data instead:', error);
+        table.updateLeaders(mockData.slice(0, count));
+        createModal(table.draw());
+      });
+}
+
 
 function showGameOver(score) {
   const fontSize = 70 * scaleRatio;
@@ -168,11 +255,15 @@ function showGameOver(score) {
   const y = canvas.height / 2;
   ctx.fillText("GAME OVER", x, y);
   if (canUploadScore) {
-    uploadScore(Math.floor(score));
+    uploadScore(Math.floor(score))
+        .then(() => {
+          setTimeout(listTopScores, 300, 10);  // change the delay here
+        });
   }
   canUploadScore = false;
-  stopMusic(); // Stop the music when the game ends
+  stopMusic();
 }
+
 
 function setupGameReset() {
   if (!hasAddedEventListenersForRestart) {
@@ -257,13 +348,13 @@ function gameLoop(currentTime) {
     if (powerUpController.collideWith(player)) {
       // Player hit power up
       gameSpeed *= 1.20; // Increase speed by 20%
-      console.log(`Game speed: ${gameSpeed}`); // Add this line
+      console.log(`Game speed: ${gameSpeed}`);
       if (gameSpeed >= 2.25) {
         cycleState = cycleColors.length - 1;  // Set to rainbow state
       } else {
         cycleState = (cycleState + 1) % (cycleColors.length - 1);  // Cycle through dusk-dawn states
       }
-      console.log(`Cycle state: ${cycleState}`); // Add this line
+      console.log(`Cycle state: ${cycleState}`);
       powerUpController.reset(); // Reset the power up
     } else {
       // Player hit cactus
@@ -294,3 +385,4 @@ requestAnimationFrame(gameLoop);
 
 window.addEventListener("keyup", reset, { once: true });
 window.addEventListener("touchstart", reset, { once: true });
+
