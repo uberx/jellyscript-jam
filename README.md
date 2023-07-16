@@ -58,7 +58,8 @@ The link to the standalone game and play can be found [Dino Time Crunch Repo](ht
 This is a simple runner game where all actions can be controlled using the "Space" key. As the game starts, the Dino can acquire power-ups that accelerate the time cycle and change the environment between dawn, day, dusk, and night. It may sound straightforward, but things can get dicey when you go too fast and warp the space-time continuum. Hold on to your Dino and try to survive for as long as possible!
 
 #### Game Video
-<iframe width="560" height="315" src="https://www.youtube.com/embed/vThfF4-jd9c" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+       
+    [![Dino Time Crunch](https://img.youtube.com/vi/2Z3Z3Y5Q4Zc/0.jpg)](https://www.youtube.com/watch?v=2Z3Z3Y5Q4Zc)
 
 #### Working with Twitch Extension
 
