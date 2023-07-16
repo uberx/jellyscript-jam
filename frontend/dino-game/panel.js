@@ -44,6 +44,7 @@ let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
 let gameOver = false;
+let gameStarted = false; //used to prevent leaderboard loading at the beginning
 let hasAddedEventListenersForRestart = false;
 let waitingToStart = true;
 let canUploadScore = true;
@@ -289,7 +290,7 @@ function createModal(content) {
   }
 
   function handleKeyPress(event) {
-      if (event.code === 'Space') {
+      if (event.code === 'Space' && !gameStarted) {
           closeModal();
       }
   }
@@ -340,7 +341,6 @@ const mockLeaderboardData = [
   { username: 'User10', score: 100 },
 ];
 
-createLeaderboard(mockLeaderboardData);
 
 function showGameOver(score) {
   const fontSize = 70 * scaleRatio;
@@ -356,6 +356,7 @@ function showGameOver(score) {
       });
   }
   canUploadScore = false;
+  gameStarted = false;
   stopMusic();
 }
 
@@ -381,9 +382,10 @@ function reset() {
   score.reset();
   gameSpeed = GAME_SPEED_START;
   canUploadScore = true;
+  gameStarted = true;
   playMusic(); // Start playing the music when the game resets
 
-  showLeaderboardModal();
+  // showLeaderboardModal();
 }
 
 
