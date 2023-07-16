@@ -27,7 +27,7 @@ export default class Score {
     return this.score;
   }
 
-  draw(gameSpeed){
+  draw(gameSpeed) {
     const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
     const y = 20 * this.scaleRatio;
 

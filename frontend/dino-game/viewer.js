@@ -13,7 +13,7 @@ twitch.onContext((context) => {
 twitch.onAuthorized((auth) => {
   //console.log('twitch.OnAuthorized called')
   // save our credentials
-  token = auth.token;  
-  userId = auth.userId; 
+  token = auth.token;
+  userId = auth.userId;
 });
 

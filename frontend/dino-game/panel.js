@@ -72,45 +72,45 @@ const mockData = [
 
 //Real API data
 const mockData2 = {
-    "error": false,
-    "scores": [
-      {
-        "_id": "8a17707e-1530-4c70-bc42-4e330356cab2",
-        "username": "jellyscriptjam",
-        "score": 1337,
-        "updatedAt": 1689410337575,
-        "__v": 0
-      },
-      {
-        "_id": "f1ae2638-e9fa-48e2-9b39-5982f12aced6",
-        "username": "jellyscriptjam",
-        "score": 1078,
-        "updatedAt": 1689411352352,
-        "__v": 0
-      },
-      {
-        "_id": "0f31c52c-4ebc-4d9b-8985-3ebafe338f48",
-        "username": "jellyscriptjam",
-        "score": 1000,
-        "updatedAt": 1689410316787,
-        "__v": 0
-      },
-      {
-        "_id": "f21504c0-c8f5-4117-94f6-5d6c01ad8514",
-        "username": "jellyscriptjam",
-        "score": 810,
-        "updatedAt": 1689480521388,
-        "__v": 0
-      },
-      {
-        "_id": "19c07f56-c0ba-4a45-8ae2-a2c06997f7b6",
-        "username": "jellyscriptjam",
-        "score": 500,
-        "updatedAt": 1689408773057,
-        "__v": 0
-      }
-    ]
-  }
+  "error": false,
+  "scores": [
+    {
+      "_id": "8a17707e-1530-4c70-bc42-4e330356cab2",
+      "username": "jellyscriptjam",
+      "score": 1337,
+      "updatedAt": 1689410337575,
+      "__v": 0
+    },
+    {
+      "_id": "f1ae2638-e9fa-48e2-9b39-5982f12aced6",
+      "username": "jellyscriptjam",
+      "score": 1078,
+      "updatedAt": 1689411352352,
+      "__v": 0
+    },
+    {
+      "_id": "0f31c52c-4ebc-4d9b-8985-3ebafe338f48",
+      "username": "jellyscriptjam",
+      "score": 1000,
+      "updatedAt": 1689410316787,
+      "__v": 0
+    },
+    {
+      "_id": "f21504c0-c8f5-4117-94f6-5d6c01ad8514",
+      "username": "jellyscriptjam",
+      "score": 810,
+      "updatedAt": 1689480521388,
+      "__v": 0
+    },
+    {
+      "_id": "19c07f56-c0ba-4a45-8ae2-a2c06997f7b6",
+      "username": "jellyscriptjam",
+      "score": 500,
+      "updatedAt": 1689408773057,
+      "__v": 0
+    }
+  ]
+}
 
 function playMusic() {
   audio.play();
@@ -131,20 +131,20 @@ function createSprites() {
   const groundHeightInGame = GROUND_HEIGHT * scaleRatio;
 
   player = new Player(
-      ctx,
-      playerWidthInGame,
-      playerHeightInGame,
-      minJumpHeightInGame,
-      maxJumpHeightInGame,
-      scaleRatio
+    ctx,
+    playerWidthInGame,
+    playerHeightInGame,
+    minJumpHeightInGame,
+    maxJumpHeightInGame,
+    scaleRatio
   );
 
   ground = new Ground(
-      ctx,
-      groundWidthInGame,
-      groundHeightInGame,
-      GROUND_AND_CACTUS_SPEED,
-      scaleRatio
+    ctx,
+    groundWidthInGame,
+    groundHeightInGame,
+    GROUND_AND_CACTUS_SPEED,
+    scaleRatio
   );
 
   const cactiImages = CACTI_CONFIG.map((cactus) => {
@@ -158,10 +158,10 @@ function createSprites() {
   });
 
   cactiController = new CactiController(
-      ctx,
-      cactiImages,
-      scaleRatio,
-      GROUND_AND_CACTUS_SPEED
+    ctx,
+    cactiImages,
+    scaleRatio,
+    GROUND_AND_CACTUS_SPEED
   );
 
   score = new Score(ctx, scaleRatio);
@@ -187,13 +187,13 @@ if (screen.orientation) {
 
 function getScaleRatio() {
   const screenHeight = Math.min(
-      window.innerHeight,
-      document.documentElement.clientHeight
+    window.innerHeight,
+    document.documentElement.clientHeight
   );
 
   const screenWidth = Math.min(
-      window.innerWidth,
-      document.documentElement.clientWidth
+    window.innerWidth,
+    document.documentElement.clientWidth
   );
 
   if (screenWidth / screenHeight < GAME_WIDTH / GAME_HEIGHT) {
@@ -214,7 +214,7 @@ function uploadScore(score) {
       score: score
     })
   })
-      .then(resp => resp.json());
+    .then(resp => resp.json());
 }
 
 function listTopScores(count) {
@@ -225,25 +225,25 @@ function listTopScores(count) {
       authorization: 'Bearer ' + window.Twitch.ext.viewer.sessionToken
     },
   })
-      .then(resp => {
-        if (!resp.ok) {
-          throw new Error(`HTTP error! status: ${resp.status}`);
-        }
-        return resp.json().scores;
-      })
-      .then(data => {
-        if (!data || data.length === 0) {
-          console.warn('No data received from API, using mock data instead');
-          data = mockData.slice(0, count);
-        }
-        table.updateLeaders(data);
-        createModal(table.draw());
-      })
-      .catch(error => {
-        console.error('Error fetching data from API, using mock data instead:', error);
-        table.updateLeaders(mockData.slice(0, count));
-        createModal(table.draw());
-      });
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(`HTTP error! status: ${resp.status}`);
+      }
+      return resp.json().scores;
+    })
+    .then(data => {
+      if (!data || data.length === 0) {
+        console.warn('No data received from API, using mock data instead');
+        data = mockData.slice(0, count);
+      }
+      table.updateLeaders(data);
+      createModal(table.draw());
+    })
+    .catch(error => {
+      console.error('Error fetching data from API, using mock data instead:', error);
+      table.updateLeaders(mockData.slice(0, count));
+      createModal(table.draw());
+    });
 }
 
 
@@ -256,9 +256,9 @@ function showGameOver(score) {
   ctx.fillText("GAME OVER", x, y);
   if (canUploadScore) {
     uploadScore(Math.floor(score))
-        .then(() => {
-          setTimeout(listTopScores, 300, 10);  // change the delay here
-        });
+      .then(() => {
+        setTimeout(listTopScores, 300, 10);  // change the delay here
+      });
   }
   canUploadScore = false;
   stopMusic();

@@ -5,7 +5,7 @@ export default class Table {
         this.leaders = [];
     }
 
-draw() {
+    draw() {
         const fontSize = 15 * this.scaleRatio;
         const offset = 50 * this.scaleRatio;
         const x1 = 10 * this.scaleRatio;
@@ -14,24 +14,24 @@ draw() {
 
 
         let html = `<style>
-table {
-width: 100%;
-border-collapse: collapse;
-};
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        };
 
-th, td {
-border : 1px solid #ddd;
-padding 8px;
-}
+                        th, td {
+                            border : 1px solid #ddd;
+                            padding 8px;
+                        }
 
-th {
-padding-top: 12px;
-padding-bottom: 12px;
-text-align: left;
-background-color: #4CAF50;
-color: white;
-}
-</style>`;
+                        th {
+                            padding-top: 12px;
+                            padding-bottom: 12px;
+                            text-align: left;
+                            background-color: #4CAF50;
+                            color: white;
+                        }
+                    </style>`;
         this.ctx.font = `${fontSize}px Verdana`;
         this.ctx.fillStyle = "grey";
 
