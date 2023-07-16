@@ -11,7 +11,7 @@ const ctx = canvas.getContext("2d");
 const GAME_SPEED_START = 1; // 1.0
 const GAME_SPEED_INCREMENT = 0.00001;
 
-const ebs = "https://varangianroutes.com";
+const ebs = "https://www.varangianroute.com";
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 200;
@@ -204,7 +204,7 @@ function getScaleRatio() {
 }
 
 function uploadScore(score) {
-  return fetch("https://www.varangianroute.com/scores", {
+  return fetch(ebs + '/scores', {
     method: 'POST',
     headers: {
       "Content-Type": "application/json",
