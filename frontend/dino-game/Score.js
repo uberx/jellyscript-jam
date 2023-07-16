@@ -9,7 +9,7 @@ export default class Score {
   }
 
   update(frameTimeDelta, gameSpeed) {
-    this.score += frameTimeDelta * 0.01;
+    this.score += frameTimeDelta * 0.01 * gameSpeed;
   }
 
   reset() {
