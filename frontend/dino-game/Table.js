@@ -38,7 +38,7 @@ export default class Table {
         html += '<table><thead><tr><th>Username</th><th>Score</th></tr></thead><tbody>';
 
         this.leaders.forEach((leader, index) => {
-            html += `<tr><td>${leader.username}</td><td>${leader.score}</td></tr>`;
+            html += `<tr><td>${index+1}. ${leader.username}</td><td>${leader.score}</td></tr>`;
         });
 
         html += '</tbody></table>';
