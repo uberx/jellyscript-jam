@@ -263,7 +263,7 @@ function createModal(content) {
   modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
 
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = 'Close';
+  closeBtn.textContent = 'X';
   closeBtn.style.position = 'absolute';
   closeBtn.style.top = '20px';
   closeBtn.style.right = '20px';
