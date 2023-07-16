@@ -47,6 +47,22 @@ let canUploadScore = true;
 let cycleState = 0;
 let cycleColors = ["#87CEEB", "#4682B4", "#000000", "#4682B4", "#87CEEB", "rainbow"];
 
+const audio = new Audio("music/I_Can_Explain.wav");
+audio.loop = true;
+audio.volume = 1; // Set the initial volume here
+
+
+// Function to play the music
+function playMusic() {
+  audio.play();
+}
+
+// Function to stop the music
+function stopMusic() {
+  audio.pause();
+  audio.currentTime = 0;
+}
+
 function createSprites() {
   const playerWidthInGame = PLAYER_WIDTH * scaleRatio;
   const playerHeightInGame = PLAYER_HEIGHT * scaleRatio;
@@ -155,6 +171,7 @@ function showGameOver(score) {
     uploadScore(Math.floor(score));
   }
   canUploadScore = false;
+  stopMusic(); // Stop the music when the game ends
 }
 
 function setupGameReset() {
@@ -178,6 +195,7 @@ function reset() {
   score.reset();
   gameSpeed = GAME_SPEED_START;
   canUploadScore = true;
+  playMusic(); // Start playing the music when the game resets
 }
 
 function showStartGameText() {
@@ -187,6 +205,7 @@ function showStartGameText() {
   const x = canvas.width / 14;
   const y = canvas.height / 2;
   ctx.fillText("Tap Screen or Press Space To Start", x, y);
+  playMusic(); // Start playing the music when waiting to start
 }
 
 function updateGameSpeed(frameTimeDelta) {
