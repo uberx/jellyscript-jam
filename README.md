@@ -50,7 +50,8 @@ There are no specific restrictions on the database layer. The database can be ho
 
 At its core, this project is a game running within the Twitch extension. For the purpose of this codejam, we have implemented a game called "Dino Time Crunch".
 
-The link to the standalone game and play can be found here: [GitHub Page Link Placeholder]
+The link to the standalone game and play can be found [Dino Time Crunch Repo](https://varangian-core.github.io/Dino-Time-Crunch/).
+
 
 #### Game Description
 
