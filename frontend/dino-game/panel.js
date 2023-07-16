@@ -57,7 +57,7 @@ audio.volume = 1;
 
 
 //Mock Data
-const mockData = [
+const mockScores = [
   { username: 'Player1', score: 1000 },
   { username: 'Player2', score: 900 },
   { username: 'Player3', score: 800 },
@@ -229,23 +229,52 @@ function listTopScores(count) {
       if (!resp.ok) {
         throw new Error(`HTTP error! status: ${resp.status}`);
       }
-      return resp.json().scores;
+      return resp.json();
     })
     .then(data => {
-      if (!data || data.length === 0) {
+      let scores = data.scores;
+      if (!scores || scores.length === 0) {
         console.warn('No data received from API, using mock data instead');
-        data = mockData.slice(0, count);
+        scores = mockScores.slice(0, count);
       }
-      table.updateLeaders(data);
+      table.updateLeaders(scores);
       createModal(table.draw());
     })
     .catch(error => {
       console.error('Error fetching data from API, using mock data instead:', error);
-      table.updateLeaders(mockData.slice(0, count));
+      table.updateLeaders(mockScores.slice(0, count));
       createModal(table.draw());
     });
 }
 
+function createModal(content) {
+  const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '50%';
+  modal.style.left = '50%';
+  modal.style.transform = 'translate(-50%, -50%)';
+  modal.style.backgroundColor = 'rgba(133, 133, 133, 0.5)';
+  modal.style.zIndex = "1000";
+  modal.style.padding = '20px';
+  modal.style.width = '80%';
+  modal.style.height = '80%';
+  modal.style.overflow = 'auto';
+  modal.style.borderRadius = "10px";
+  modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Close';
+  closeBtn.style.position = 'absolute';
+  closeBtn.style.top = '20px';
+  closeBtn.style.right = '20px';
+  closeBtn.addEventListener('click', () => {
+      document.body.removeChild(modal);
+  });
+
+  modal.innerHTML = content;
+  modal.appendChild(closeBtn);
+  document.body.appendChild(modal);
+}
 
 function showGameOver(score) {
   const fontSize = 70 * scaleRatio;
